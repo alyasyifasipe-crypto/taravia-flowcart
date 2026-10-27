@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flowchart Interaktif TARAVIA</title>
+<style>
+  :root {
+    --cream: #fbf8ef;
+    --white: #ffffff;
+    --sage: #a9bda6;
+    --mint: #dff2e6;
+    --emerald: #247a5a;
+    --emerald-dark: #185840;
+    --ink: #263a31;
+    --muted: #62756a;
+    --line: #9db8a5;
+    --gold: #d6b56d;
+    --soft-gold: #fff3d9;
+    --shadow: 0 8px 22px rgba(37, 82, 60, .09);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 18px;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  .heading { text-align: center; margin: 4px auto 22px; }
+  .eyebrow {
+    display: inline-block; padding: 6px 11px; border-radius: 999px;
+    background: var(--mint); color: var(--emerald-dark);
+    font-size: 11px; font-weight: 800; letter-spacing: .08em;
+  }
+  h1 { margin: 12px 0 7px; font-size: clamp(23px, 4vw, 34px); color: var(--emerald-dark); }
+  .subtitle { margin: 0 auto; max-width: 620px; line-height: 1.55; color: var(--muted); font-size: 14px; }
+  .hint { margin: 12px 0 0; color: var(--emerald); font-size: 12px; font-weight: 700; }
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .node {
+    width: min(100%, 570px); position: relative; border: 1.5px solid #c5d9c9;
+    border-radius: 15px; padding: 14px 17px; background: var(--white);
+    box-shadow: var(--shadow); color: var(--ink); cursor: pointer;
+    text-align: left; display: flex; align-items: center; gap: 13px;
+    transition: border-color .18s ease, transform .18s ease, background .18s ease;
+    font: inherit;
+  }
+  .node:hover { border-color: var(--emerald); transform: translateY(-1px); }
+  .node:focus-visible { outline: 3px solid #72b997; outline-offset: 3px; }
+  .node[aria-pressed="true"] { border-color: var(--emerald); background: #f0faf3; box-shadow: 0 0 0 3px rgba(36,122,90,.11), var(--shadow); }
+  .num {
+    flex: 0 0 38px; height: 38px; display: grid; place-items: center;
+    border-radius: 12px; background: var(--mint); color: var(--emerald-dark); font-weight: 800;
+  }
+  .node-text { flex: 1; min-width: 0; }
+  .node-title { display: block; font-weight: 800; font-size: 15px; margin-bottom: 3px; }
+  .node-short { display: block; font-size: 12px; line-height: 1.45; color: var(--muted); }
+  .chevron { color: var(--emerald); font-size: 18px; font-weight: 800; }
+  .terminator { width: min(100%, 250px); justify-content: center; text-align: center; border-radius: 999px; background: var(--mint); border-color: var(--sage); }
+  .terminator .num { background: var(--white); }
+  .connector { height: 29px; display: flex; align-items: center; justify-content: center; color: var(--emerald); font-size: 22px; font-weight: 700; }
+  .decision {
+    width: min(100%, 330px); min-height: 94px; border: 2px solid var(--sage);
+    background: var(--soft-gold); transform: rotate(0deg); border-radius: 18px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 16px; text-align: center; cursor: pointer; box-shadow: var(--shadow);
+    color: var(--ink); font: inherit; transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .decision:hover, .decision[aria-pressed="true"] { border-color: var(--emerald); box-shadow: 0 0 0 3px rgba(36,122,90,.11), var(--shadow); }
+  .decision strong { font-size: 15px; }
+  .decision small { margin-top: 5px; color: var(--muted); font-size: 12px; }
+  .branches { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; margin-top: 5px; }
+  .branch { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+  .branch-label { font-weight: 800; font-size: 12px; padding: 5px 12px; border-radius: 999px; margin: 0 0 10px; }
+  .yes { background: var(--mint); color: var(--emerald-dark); }
+  .no { background: var(--soft-gold); color: #7a5b21; }
+  .branch .node { width: 100%; min-height: 106px; }
+  .branch .node-title { font-size: 14px; }
+  .branch .node-short { font-size: 12px; }
+  .branch .connector { height: 25px; }
+  .detail {
+    margin: 22px auto 0; max-width: 800px; border: 1px solid #c5d9c9;
+    background: var(--white); border-radius: 18px; padding: 19px 20px; box-shadow: var(--shadow);
+  }
+  .detail-top { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .detail-badge { background: var(--emerald); color: white; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 800; }
+  .detail h2 { margin: 0; color: var(--emerald-dark); font-size: 19px; }
+  .detail p { margin: 8px 0 0; line-height: 1.65; font-size: 14px; }
+  .detail .purpose { color: var(--muted); font-size: 12px; margin-top: 11px; }
+  .footer { text-align: center; color: var(--muted); font-size: 11px; margin: 20px 0 2px; }
+  @media (max-width: 620px) {
+    body { padding: 12px; }
+    .branches { grid-template-columns: 1fr; gap: 18px; }
+    .branch .node { max-width: 570px; }
+    .node { padding: 12px; gap: 10px; }
+    .node-title { font-size: 14px; }
+    .detail { padding: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="heading">
+    <span class="eyebrow">PROTOTYPE SUPERVISI PENDIDIKAN</span>
+    <h1>Alur Supervisi TARAVIA</h1>
+    <p class="subtitle">Tata Arah Evaluasi dan Pembinaan Guru — pilih salah satu tahap untuk melihat penjelasan, peran, dan hasil yang diharapkan.</p>
+    <p class="hint">↘ Klik atau ketuk setiap kotak untuk melihat detail tahap.</p>
+  </header>
+
+  <main class="flow" aria-label="Flowchart alur supervisi TARAVIA">
+    <button class="node terminator" data-step="start" aria-pressed="true">
+      <span class="num">▶</span><span class="node-text"><span class="node-title">Mulai</span><span class="node-short">Proses supervisi direncanakan</span></span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="schedule" aria-pressed="false">
+      <span class="num">1</span><span class="node-text"><span class="node-title">Penjadwalan Supervisi</span><span class="node-short">Kepala sekolah menentukan guru, tanggal, waktu, dan kelas</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="prepare" aria-pressed="false">
+      <span class="num">2</span><span class="node-text"><span class="node-title">Persiapan Guru</span><span class="node-short">Guru menyiapkan perangkat dan media pembelajaran</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="observe" aria-pressed="false">
+      <span class="num">3</span><span class="node-text"><span class="node-title">Observasi Pembelajaran</span><span class="node-short">Kepala sekolah mengamati proses belajar di kelas</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="record" aria-pressed="false">
+      <span class="num">4</span><span class="node-text"><span class="node-title">Pengisian Instrumen dan Rekap</span><span class="node-short">Temuan dicatat lalu dirangkum untuk ditinjau</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="feedback" aria-pressed="false">
+      <span class="num">5</span><span class="node-text"><span class="node-title">Umpan Balik Kepala Sekolah</span><span class="node-short">Menyampaikan kekuatan dan aspek yang perlu dikembangkan</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="reflection" aria-pressed="false">
+      <span class="num">6</span><span class="node-text"><span class="node-title">Refleksi Guru</span><span class="node-short">Guru meninjau pembelajaran dan mengenali kebutuhan perbaikan</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="plan" aria-pressed="false">
+      <span class="num">7</span><span class="node-text"><span class="node-title">Rencana Tindak Lanjut</span><span class="node-short">Guru dan kepala sekolah menyepakati langkah perbaikan</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="node" data-step="monitor" aria-pressed="false">
+      <span class="num">8</span><span class="node-text"><span class="node-title">Pelaksanaan dan Monitoring</span><span class="node-short">Guru mencoba perbaikan dan kepala sekolah memantau perkembangannya</span></span><span class="chevron">›</span>
+    </button>
+    <div class="connector" aria-hidden="true">↓</div>
+
+    <button class="decision" data-step="decision" aria-pressed="false">
+      <strong>Apakah target perbaikan tercapai?</strong>
+      <small>Pilih tahap ini untuk melihat alur keputusan</small>
+    </button>
+
+    <div class="branches">
+      <section class="branch" aria-label="Jika target tercapai">
+        <span class="branch-label yes">YA — TERCAPAI</span>
+        <button class="node" data-step="yes" aria-pressed="false">
+          <span class="num">✓</span><span class="node-text"><span class="node-title">Dokumentasi Hasil</span><span class="node-short">Hasil perbaikan dicatat dan proses supervisi ditutup</span></span><span class="chevron">›</span>
+        </button>
+      </section>
+      <section class="branch" aria-label="Jika target belum tercapai">
+        <span class="branch-label no">BELUM — PERLU PERBAIKAN</span>
+        <button class="node" data-step="no" aria-pressed="false">
+          <span class="num">↻</span><span class="node-text"><span class="node-title">Pendampingan Lanjutan</span><span class="node-short">Tinjau kendala, sesuaikan strategi, lalu lakukan monitoring kembali</span></span><span class="chevron">›</span>
+        </button>
+        <div class="connector" aria-hidden="true">↓</div>
+        <button class="node" data-step="repeat" aria-pressed="false">
+          <span class="num">↺</span><span class="node-text"><span class="node-title">Kembali ke Monitoring</span><span class="node-short">Pantau lagi setelah langkah perbaikan dilakukan</span></span><span class="chevron">›</span>
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <section class="detail" id="detail-panel" aria-live="polite">
+    <div class="detail-top"><span class="detail-badge" id="detail-number">AWAL</span><h2 id="detail-title">Mulai</h2></div>
+    <p id="detail-description">Proses supervisi dimulai dengan perencanaan yang jelas. TARAVIA membantu menggambarkan tahapan supervisi secara runtut agar kegiatan observasi, pembinaan, dan pemantauan tidak terlewat.</p>
+    <p class="purpose" id="detail-purpose">Peran: Kepala sekolah dan guru · Hasil: alur kerja supervisi yang dipahami bersama.</p>
+  </section>
+
+  <p class="footer">TARAVIA · Tata Arah Evaluasi dan Pembinaan Guru · Prototype tugas kuliah · Data simulasi</p>
+</div>
+<script>
+(function () {
+  const steps = {
+    start: {
+      number: "AWAL", title: "Mulai",
+      description: "Proses supervisi dimulai dengan perencanaan yang jelas. TARAVIA membantu menggambarkan tahapan supervisi secara runtut agar kegiatan observasi, pembinaan, dan pemantauan tidak terlewat.",
+      purpose: "Peran: Kepala sekolah dan guru · Hasil: alur kerja supervisi yang dipahami bersama."
+    },
+    schedule: {
+      number: "TAHAP 1", title: "Penjadwalan Supervisi",
+      description: "Kepala sekolah menentukan guru yang akan disupervisi, mata pelajaran, kelas, tanggal, dan waktu pelaksanaan. Jadwal kemudian diinformasikan kepada guru agar persiapan dapat dilakukan lebih awal.",
+      purpose: "Peran utama: Kepala sekolah · Hasil: jadwal supervisi yang jelas dan terdokumentasi."
+    },
+    prepare: {
+      number: "TAHAP 2", title: "Persiapan Guru",
+      description: "Guru menyiapkan RPP atau modul ajar, tujuan pembelajaran, bahan ajar, media pembelajaran, serta lembar kerja atau instrumen evaluasi. Dokumen disesuaikan dengan kelas dan materi yang akan diajarkan.",
+      purpose: "Peran utama: Guru · Hasil: perangkat pembelajaran siap ditinjau dan digunakan."
+    },
+    observe: {
+      number: "TAHAP 3", title: "Observasi Pembelajaran",
+      description: "Kepala sekolah mengamati pelaksanaan pembelajaran di kelas, termasuk penyampaian tujuan, penggunaan metode dan media, partisipasi peserta didik, pengelolaan kelas, serta cara guru memeriksa pemahaman siswa.",
+      purpose: "Peran utama: Kepala sekolah · Hasil: catatan pengamatan yang objektif."
+    },
+    record: {
+      number: "TAHAP 4", title: "Pengisian Instrumen dan Rekap",
+      description: "Setelah observasi, kepala sekolah mengisi instrumen berdasarkan hal yang benar-benar diamati. Data kemudian direkap untuk membantu melihat praktik yang sudah baik dan aspek yang membutuhkan dukungan.",
+      purpose: "Peran utama: Kepala sekolah · Hasil: ringkasan hasil observasi yang mudah ditinjau."
+    },
+    feedback: {
+      number: "TAHAP 5", title: "Umpan Balik Kepala Sekolah",
+      description: "Kepala sekolah menyampaikan apresiasi atas praktik pembelajaran yang sudah baik, kemudian memberikan saran yang spesifik, realistis, dan membangun untuk aspek yang masih perlu ditingkatkan.",
+      purpose: "Peran utama: Kepala sekolah · Hasil: guru memahami kekuatan dan area pengembangan."
+    },
+    reflection: {
+      number: "TAHAP 6", title: "Refleksi Guru",
+      description: "Guru meninjau kembali proses pembelajaran, respons peserta didik, ketercapaian tujuan, kendala yang dihadapi, serta dukungan yang dibutuhkan. Refleksi digunakan sebagai bahan diskusi bersama, bukan untuk menyalahkan guru.",
+      purpose: "Peran utama: Guru · Hasil: kebutuhan perbaikan yang dikenali oleh guru."
+    },
+    plan: {
+      number: "TAHAP 7", title: "Rencana Tindak Lanjut",
+      description: "Guru dan kepala sekolah menyepakati langkah perbaikan, bentuk pendampingan, waktu pelaksanaan, dan indikator keberhasilan. Rencana dibuat sesuai kebutuhan pembelajaran dan memungkinkan untuk dilaksanakan.",
+      purpose: "Peran: Guru dan kepala sekolah · Hasil: rencana perbaikan dengan target dan waktu yang jelas."
+    },
+    monitor: {
+      number: "TAHAP 8", title: "Pelaksanaan dan Monitoring",
+      description: "Guru menerapkan perbaikan yang telah disepakati. Kepala sekolah memantau perkembangannya melalui diskusi, peninjauan dokumen, atau pengamatan lanjutan yang sesuai dengan kebutuhan.",
+      purpose: "Peran: Guru dan kepala sekolah · Hasil: catatan perkembangan pelaksanaan tindak lanjut."
+    },
+    decision: {
+      number: "KEPUTUSAN", title: "Apakah target perbaikan tercapai?",
+      description: "Hasil pemantauan dibandingkan dengan indikator keberhasilan yang telah disepakati. Keputusan dibuat berdasarkan bukti yang relevan dan diskusi antara guru dengan kepala sekolah.",
+      purpose: "Jika tercapai: dokumentasikan hasil. Jika belum: identifikasi kendala, berikan dukungan, dan lanjutkan perbaikan."
+    },
+    yes: {
+      number: "JALUR YA", title: "Dokumentasi Hasil",
+      description: "Jika target tercapai, hasil perbaikan dicatat, praktik baik dapat dipertahankan, dan proses supervisi pada siklus tersebut ditutup. Catatan tetap disimpan sebagai bahan pengembangan profesional guru.",
+      purpose: "Peran: Kepala sekolah dan guru · Hasil: tindak lanjut tercatat selesai."
+    },
+    no: {
+      number: "JALUR BELUM", title: "Pendampingan Lanjutan",
+      description: "Jika target belum tercapai, guru dan kepala sekolah membahas hambatan yang muncul. Mereka dapat menyesuaikan strategi, menambah pendampingan, atau memperjelas langkah perbaikan sebelum monitoring berikutnya.",
+      purpose: "Peran: Guru dan kepala sekolah · Hasil: strategi perbaikan yang lebih sesuai dengan kebutuhan."
+    },
+    repeat: {
+      number: "SIKLUS LANJUTAN", title: "Kembali ke Monitoring",
+      description: "Setelah pendampingan dan langkah perbaikan dilakukan, perkembangan dipantau kembali. Siklus ini dapat diulang sampai target tercapai atau sampai disepakati kebutuhan tindak lanjut berikutnya.",
+      purpose: "Hasil: perbaikan berkelanjutan, bukan sekadar menyelesaikan administrasi supervisi."
+    }
+  };
+
+  const buttons = document.querySelectorAll("[data-step]");
+  const number = document.getElementById("detail-number");
+  const title = document.getElementById("detail-title");
+  const description = document.getElementById("detail-description");
+  const purpose = document.getElementById("detail-purpose");
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const step = steps[button.dataset.step];
+      if (!step) return;
+      buttons.forEach(function (item) {
+        item.setAttribute("aria-pressed", item === button ? "true" : "false");
+      });
+      number.textContent = step.number;
+      title.textContent = step.title;
+      description.textContent = step.description;
+      purpose.textContent = step.purpose;
+      const panel = document.getElementById("detail-panel");
+      if (window.innerWidth < 620) {
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
